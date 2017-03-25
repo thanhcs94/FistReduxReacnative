@@ -1,0 +1,154 @@
+init project :
+#1 : react-native init repo_name || create-react-app repo_name
+#2 : yarn add redux react-redux redux-thunk
+#3 : mkdir reducers
+     touch reducers/index.js reducers/dataReducer.js
+     touch app.js api.js configureStore.js constants.js actions.js
+
+4,
+In your index.ios or index.android.
+import Provider from react-redux
+import configureStore
+import App which will be our main application component for this tutorial
+create the store, calling configureStore()
+wrap App in the Provider, passing in the store
+
+
+5, constants.js
+export const TYPE_SAMPLE = 'TYPE_SAMPLE'
+
+6, reducers/dataReducer.js and reducers/index.js
+
+import the constants that we will be needing in this reducer
+import { TYPE_SAMPLE } from '../constants'
+
+const initialState = {
+  data: [],
+  something_esle : value
+}
+
+The reducer checks for three actions, updating the state accordingly.
+export default function dataReducer(state = initialState, action) {
+  switch (action.type) {
+    case TYPE_SAMPLE:
+      return {
+        ...state,
+        data: [],
+        something_else: value
+      }
+      default:
+            return state
+    }
+}
+
+Now, we need to create our reducer entrypoint, in which we will call combineReducers on all of our reducers
+import { combineReducers } from 'redux'
+import appData from './dataReducer'
+
+const rootReducer = combineReducers({
+    appData
+})
+
+export default rootReducer
+
+7,  actions.js
+
+export function getDataSuccess(data) {
+  return {
+    type: FETCHING_DATA_SUCCESS,
+    data,
+  }
+}
+
+
+8, configureStore.js
+import the root reducer from ‘./reducers’
+export a function that will create the store
+
+import { createStore } from 'redux'
+import app from './reducers'
+
+export default function configureStore() {
+  let store = createStore(app)
+  return store
+}
+
+
+9, back to App.js
+
+function mapStateToProps (state) {
+  return {
+    appData: state.appData
+  }
+}
+
+function mapDispatchToProps (dispatch) {
+  return {
+    fetchData: () => dispatch(fetchData())
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(App)
+
+
+10 , api.js
+
+to get data
+
+11, Redux Thunk
+“Redux Thunk middleware allows you to write action creators that return a function instead of an action. The thunk can be used to delay the dispatch of an action, or to dispatch only if a certain condition is met. The inner function receives the store methods dispatch and getState as parameters.” — Redux Thunk documentation
+
+export function fetchData() {
+  return (dispatch) => {
+    dispatch(getData())
+    getPeople()
+      .then((data) => {
+        dispatch(getDataSuccess(data))
+      })
+      .catch((err) => console.log('err:', err))
+  }
+}
+
+
+12, update configureStore to apply the thunk middleware
+
+import { createStore, applyMiddleware } from 'redux'
+import app from './reducers'
+import thunk from 'redux-thunk'
+
+export default function configureStore() {
+  let store = createStore(app, applyMiddleware(thunk))
+  return store
+}
+
+13 , call in App.js
+
+We add an onPress method to the TouchableHighlight that calls props.fetchData() when pressed.
+We add a check to see if props.appData.isFetching is true, and if so we return loading indicator text.
+We add a check to props.appData.data.length, looping through the array if it is there and returning the name and age of the person.
+
+Now, when we click the Load Data button, we should see the loading message, and then the data should display after 3 seconds.
+
+
+<TouchableHighlight style={button} onPress={() => props.fetchData()}>
+
+{
+        props.appData.isFetching && <Text>Loading</Text>
+}
+{
+        props.appData.data.length ? (
+          props.appData.data.map((person, i) => {
+            return <View key={i} >
+              <Text>Name: {person.name}</Text>
+              <Text>Age: {person.age}</Text>
+            </View>
+          })
+        ) : null
+}
+
+
+
+
+
+
+
