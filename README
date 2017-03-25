@@ -131,19 +131,21 @@ Now, when we click the Load Data button, we should see the loading message, and 
 
 
 <TouchableHighlight style={button} onPress={() => props.fetchData()}>
-   {
-           props.appData.isFetching && <Text>Loading</Text>
-   }
-   {
-           props.appData.data.length ? (
-             props.appData.data.map((person, i) => {
-               return <View key={i} >
-                 <Text>Name: {person.name}</Text>
-                 <Text>Age: {person.age}</Text>
-               </View>
-             })
-           ) : null
-   }
+```
+{
+        props.appData.isFetching && <Text>Loading</Text>
+}
+{
+        props.appData.data.length ? (
+          props.appData.data.map((person, i) => {
+            return <View key={i} >
+              <Text>Name: {person.name}</Text>
+              <Text>Age: {person.age}</Text>
+            </View>
+          })
+        ) : null
+}
+```
 
 
 
